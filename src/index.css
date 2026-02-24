@@ -5,9 +5,19 @@
   --color-dark: #000000;
   --color-light: #ffffff;
   --color-key-color: #36bbfd;
+  --color-dark-key-color: #0077c2;
+  --color-secondary-color: #34d399;
 }
 
 body {
   background: #000000;
   font-family: "Pretendard", sans-serif;
+}
+
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
