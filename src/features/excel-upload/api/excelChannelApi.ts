@@ -33,5 +33,5 @@ export const excelChannelApi = async (
     "/bulk-import/excel-file-channel",
     formData,
   );
-  return response.data;
+  return response.data.data;
 };

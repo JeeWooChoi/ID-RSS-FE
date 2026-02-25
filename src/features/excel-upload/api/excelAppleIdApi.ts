@@ -34,5 +34,5 @@ export const excelAppleIdApi = async (
     "/bulk-import/excel-file-apple-id",
     formData,
   );
-  return response.data;
+  return response.data.data;
 };

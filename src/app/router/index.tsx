@@ -3,6 +3,7 @@ import { RootLayout } from "../layouts/RootLayout";
 import { ExcelChannelPage } from "@/pages/ExcelChannelPage";
 import { ExcelAppleIdPage } from "@/pages/ExcelAppleIdPage";
 import { ManualChannelPage } from "@/pages/ManualChannelPage";
+import { ManualAppleIdPage } from "@/pages/ManualAppleIdPage";
 
 export const router = createBrowserRouter([
   {
@@ -24,5 +25,10 @@ export const router = createBrowserRouter([
     path: "/manual-channel",
     element: <RootLayout />,
     children: [{ index: true, element: <ManualChannelPage /> }],
+  },
+  {
+    path: "/manual-apple-id",
+    element: <RootLayout />,
+    children: [{ index: true, element: <ManualAppleIdPage /> }],
   },
 ]);

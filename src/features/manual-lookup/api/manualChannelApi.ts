@@ -13,6 +13,5 @@ export const manualChannelApi = async (
     channelName: params.channelName,
     country: params.country ? params.country : null,
   });
-  console.log(response);
   return response.data.data;
 };

@@ -1,5 +1,5 @@
 import type { PodcastResult } from "@/entities/podcast/types";
-import { manualChannelApi } from "@/features/manual-lookup/api/manualChannelApi";
+import { manualAppleIdApi } from "@/features/manual-lookup/api/manualAppleIdApi";
 import { Input } from "@/shared/ui/Input";
 import { Label } from "@/shared/ui/Label";
 import { ResultTable } from "@/shared/ui/ResultTable";
@@ -8,14 +8,14 @@ import { handleApiError } from "@/shared/utils/handleApiError";
 import { useEffect, useState } from "react";
 
 interface FormState {
-  channelName: string;
+  appleId: string;
   country?: string;
 }
 
-const STORAGE_KEY = "manualChannelForm";
+const STORAGE_KEY = "manualAppleIdForm";
 
 const INITIAL_FORM: FormState = {
-  channelName: "",
+  appleId: "",
   country: "",
 };
 
@@ -33,7 +33,7 @@ const getInitialForm = (): FormState => {
   }
 };
 
-export const ManualChannelPage = () => {
+export const ManualAppleIdPage = () => {
   const [form, setForm] = useState<FormState>(getInitialForm);
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<PodcastResult[]>([]);
@@ -48,10 +48,10 @@ export const ManualChannelPage = () => {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmitJson = async () => {
-    if (!form.channelName) return alert("채널명을 입력해주세요.");
+    if (!form.appleId) return alert("Apple ID를 입력해주세요.");
 
     try {
-      const data = await manualChannelApi({ ...form });
+      const data = await manualAppleIdApi({ ...form });
       setResults(data);
       setSubmitted(true);
     } catch (error) {
@@ -71,10 +71,10 @@ export const ManualChannelPage = () => {
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-xl font-bold text-slate-100 mb-1">
-          수동 채널명으로 검색
+          수동 Apple ID로 검색
         </h2>
         <p className="text-m text-gray-400">
-          수동으로 입력한 채널명을 기준으로 Apple ID와 RSS URL을 반환합니다.
+          수동으로 입력한 Apple ID를 기준으로 RSS URL을 반환합니다.
         </p>
       </div>
 
@@ -83,11 +83,11 @@ export const ManualChannelPage = () => {
         <SectionTitle>조회 조건</SectionTitle>
         <div className="grid grid-cols-2 gap-3 mb-16">
           <div>
-            <Label required>채널명</Label>
+            <Label required>Apple ID</Label>
             <Input
-              placeholder="ex) The Daily"
-              value={form.channelName}
-              onChange={(e) => set("channelName", e.target.value)}
+              placeholder="ex) id123456789"
+              value={form.appleId}
+              onChange={(e) => set("appleId", e.target.value)}
             />
           </div>
           <div>
@@ -123,7 +123,7 @@ export const ManualChannelPage = () => {
           <SectionTitle>결과</SectionTitle>
           <ResultTable
             results={results}
-            fileName={`result_${form.channelName ?? "result"}.xlsx`}
+            fileName={`result_${form.appleId ?? "result"}.xlsx`}
           />
         </div>
       )}
