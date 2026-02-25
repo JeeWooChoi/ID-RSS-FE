@@ -10,7 +10,7 @@ interface ExcelAppleIdParams {
   channelNameColumn: string;
   appleIdColumn: string;
   rssColumn: string;
-  country: string;
+  country?: string;
 }
 
 export const excelAppleIdApi = async (
@@ -25,7 +25,10 @@ export const excelAppleIdApi = async (
   formData.append("channelNameColumn", params.channelNameColumn);
   formData.append("appleIdColumn", params.appleIdColumn);
   formData.append("rssColumn", params.rssColumn);
-  formData.append("country", params.country);
+  // country는 optional이므로 값이 있을 때만 추가
+  if (params.country) {
+    formData.append("country", params.country);
+  }
 
   const response = await axiosInstance.post(
     "/bulk-import/excel-file-apple-id",
