@@ -30,7 +30,7 @@ export const CopyCell = ({ value, mono }: CopyCellProps) => {
               : "bg-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200"
           }`}
         >
-          {copied ? <Check size={12} /> : <Copy size={12} />}
+          {value && (copied ? <Check size={12} /> : <Copy size={12} />)}
         </button>
       </div>
     </td>

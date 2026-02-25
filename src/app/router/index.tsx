@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout";
 import { ExcelChannelPage } from "@/pages/ExcelChannelPage";
+import { ExcelAppleIdPage } from "@/pages/ExcelAppleIdPage";
 
 export const router = createBrowserRouter([
   {
@@ -12,5 +13,10 @@ export const router = createBrowserRouter([
     path: "/excel-channel",
     element: <RootLayout />,
     children: [{ index: true, element: <ExcelChannelPage /> }],
+  },
+  {
+    path: "/excel-apple-id",
+    element: <RootLayout />,
+    children: [{ index: true, element: <ExcelAppleIdPage /> }],
   },
 ]);

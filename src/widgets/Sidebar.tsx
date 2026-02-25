@@ -17,11 +17,11 @@ const NAV_ITEMS: NavItem[] = [
     path: "/",
   },
   {
-    id: "excel-appleid",
+    id: "excel-apple-id",
     icon: "📊",
     label: "엑셀 → Apple ID",
     sub: "RSS 반환",
-    path: "/excel-appleid",
+    path: "/excel-apple-id",
   },
   {
     id: "manual-channel",
