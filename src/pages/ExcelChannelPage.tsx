@@ -5,7 +5,7 @@ import { Label } from "@/shared/ui/Label";
 import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { handleApiError } from "@/shared/utils/handleApiError";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface FormState {
   sheetName: string;
@@ -16,26 +16,50 @@ interface FormState {
   appleIdColumn: string;
   rssColumn: string;
   country: string;
-  file: File | null;
+  file?: File | null;
 }
 
+const STORAGE_KEY = "excelChannelForm";
+
 const INITIAL_FORM: FormState = {
-  sheetName: "US_미국",
+  sheetName: "",
   startRow: "",
   endRow: "",
-  headerRow: "1",
+  headerRow: "",
   channelNameColumn: "채널명",
   appleIdColumn: "애플 ID",
   rssColumn: "RSS",
-  country: "US",
+  country: "",
   file: null,
 };
 
+const getInitialForm = (): FormState => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return INITIAL_FORM;
+
+  try {
+    return {
+      ...INITIAL_FORM,
+      ...JSON.parse(saved),
+      file: null,
+    };
+  } catch {
+    return INITIAL_FORM;
+  }
+};
+
 export const ExcelChannelPage = () => {
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [form, setForm] = useState<FormState>(getInitialForm);
   const [dragging, setDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<PodcastResult[]>([]);
+
+  // form 변경될 때 자동 저장 (file 제외)
+  useEffect(() => {
+    const formToSave = { ...form };
+    delete formToSave.file;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formToSave));
+  }, [form]);
 
   const set = (key: keyof FormState, value: string | File | null) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -49,6 +73,7 @@ export const ExcelChannelPage = () => {
 
   const handleSubmitJson = async () => {
     if (!form.file) return alert("파일을 업로드해주세요.");
+
     try {
       const data = await excelChannelApi({ ...form, file: form.file });
       setResults(data);
@@ -56,6 +81,14 @@ export const ExcelChannelPage = () => {
     } catch (error) {
       alert(handleApiError(error));
     }
+  };
+
+  const handleReset = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setForm({
+      ...INITIAL_FORM,
+      file: null,
+    });
   };
 
   return (
@@ -69,6 +102,7 @@ export const ExcelChannelPage = () => {
           엑셀 파일의 채널명 컬럼을 읽어 Apple ID와 RSS URL을 반환합니다.
         </p>
       </div>
+
       <div className="px-10">
         {/* 파일 업로드 */}
         <SectionTitle>파일</SectionTitle>
@@ -98,20 +132,24 @@ export const ExcelChannelPage = () => {
               if (f) set("file", f);
             }}
           />
+
           {form.file && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 set("file", null);
               }}
-              className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/30 cursor-pointer text-gray-200 hover:text-red-500 transition-all text-xs flex items-center justify-center"
+              className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/30 text-gray-200 hover:text-red-500 transition-all text-xs flex items-center justify-center"
             >
               ✕
             </button>
           )}
+
           <div className="text-2xl mb-2">{form.file ? "✅" : "📂"}</div>
           <div
-            className={`text-sm font-medium ${form.file ? "text-secondary-color" : "text-gray-400"}`}
+            className={`text-sm font-medium ${
+              form.file ? "text-secondary-color" : "text-gray-400"
+            }`}
           >
             {form.file
               ? form.file.name
@@ -205,14 +243,24 @@ export const ExcelChannelPage = () => {
           </div>
         </div>
 
-        {/* Submit */}
-        <button
-          onClick={handleSubmitJson}
-          className="w-full bg-key-color hover:bg-light-key-color text-white font-semibold py-2.5 rounded-xl transition-all text-sm cursor-pointer"
-        >
-          분석 시작
-        </button>
+        {/* 버튼 영역 */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleSubmitJson}
+            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold py-4 rounded-xl transition-all text-sm cursor-pointer"
+          >
+            분석 시작
+          </button>
+
+          <button
+            onClick={handleReset}
+            className="px-5 bg-gray-600 hover:bg-gray-500 text-white rounded-xl text-sm transition-all cursor-pointer"
+          >
+            설정 초기화
+          </button>
+        </div>
       </div>
+
       {/* 결과 */}
       {submitted && results.length > 0 && (
         <div className="mt-6 px-10">
