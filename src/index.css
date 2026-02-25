@@ -5,8 +5,10 @@
   --color-dark: #000000;
   --color-light: #ffffff;
   --color-key-color: #36bbfd;
+  --color-light-key-color: #5ecafe;
   --color-dark-key-color: #0077c2;
   --color-secondary-color: #34d399;
+  --color-light-secondary-color: #6ee7b7;
 }
 
 body {

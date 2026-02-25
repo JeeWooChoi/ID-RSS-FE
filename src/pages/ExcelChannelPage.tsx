@@ -1,7 +1,10 @@
+import type { PodcastResult } from "@/entities/podcast/types";
 import { excelChannelApi } from "@/features/excel-channel/api/excelChannelApi";
 import { Input } from "@/shared/ui/Input";
 import { Label } from "@/shared/ui/Label";
+import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
+import { handleApiError } from "@/shared/utils/handleApiError";
 import { useState } from "react";
 
 interface FormState {
@@ -13,13 +16,11 @@ interface FormState {
   appleIdColumn: string;
   rssColumn: string;
   country: string;
-  overwrite: boolean;
-  returnFile: boolean;
   file: File | null;
 }
 
 const INITIAL_FORM: FormState = {
-  sheetName: "",
+  sheetName: "US_미국",
   startRow: "",
   endRow: "",
   headerRow: "1",
@@ -27,8 +28,6 @@ const INITIAL_FORM: FormState = {
   appleIdColumn: "애플 ID",
   rssColumn: "RSS",
   country: "US",
-  overwrite: true,
-  returnFile: false,
   file: null,
 };
 
@@ -36,8 +35,9 @@ export const ExcelChannelPage = () => {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [dragging, setDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [results, setResults] = useState<PodcastResult[]>([]);
 
-  const set = (key: keyof FormState, value: string | boolean | File | null) =>
+  const set = (key: keyof FormState, value: string | File | null) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -47,16 +47,14 @@ export const ExcelChannelPage = () => {
     if (f) set("file", f);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitJson = async () => {
     if (!form.file) return alert("파일을 업로드해주세요.");
-
     try {
       const data = await excelChannelApi({ ...form, file: form.file });
-      console.log(data);
+      setResults(data);
       setSubmitted(true);
     } catch (error) {
-      console.log(error);
-      alert("오류가 발생했습니다.");
+      alert(handleApiError(error));
     }
   };
 
@@ -67,11 +65,10 @@ export const ExcelChannelPage = () => {
         <h2 className="text-xl font-bold text-slate-100 mb-1">
           엑셀 → 채널명으로 검색
         </h2>
-        <p className="text-m text-slate-500">
+        <p className="text-m text-gray-400">
           엑셀 파일의 채널명 컬럼을 읽어 Apple ID와 RSS URL을 반환합니다.
         </p>
       </div>
-
       <div className="px-10">
         {/* 파일 업로드 */}
         <SectionTitle>파일</SectionTitle>
@@ -101,11 +98,10 @@ export const ExcelChannelPage = () => {
               if (f) set("file", f);
             }}
           />
-          {/* 삭제 버튼 */}
           {form.file && (
             <button
               onClick={(e) => {
-                e.stopPropagation(); // 파일 선택 창 열리는 거 막기
+                e.stopPropagation();
                 set("file", null);
               }}
               className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/30 cursor-pointer text-gray-200 hover:text-red-500 transition-all text-xs flex items-center justify-center"
@@ -207,46 +203,24 @@ export const ExcelChannelPage = () => {
               onChange={(e) => set("country", e.target.value)}
             />
           </div>
-          <div className="flex flex-col gap-2 justify-end pb-1">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.overwrite}
-                onChange={(e) => set("overwrite", e.target.checked)}
-                className="w-4 h-4 rounded accent-key-color"
-              />
-              <span className="text-sm text-slate-400">덮어쓰기</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.returnFile}
-                onChange={(e) => set("returnFile", e.target.checked)}
-                className="w-4 h-4 rounded accent-key-color"
-              />
-              <span className="text-sm text-slate-400">파일로 반환</span>
-            </label>
-          </div>
         </div>
 
         {/* Submit */}
         <button
-          onClick={handleSubmit}
-          className="w-full bg-key-color hover:bg-dark-key-color text-white font-semibold py-2.5 rounded-xl transition-all text-m cursor-pointer"
+          onClick={handleSubmitJson}
+          className="w-full bg-key-color hover:bg-light-key-color text-white font-semibold py-2.5 rounded-xl transition-all text-sm cursor-pointer"
         >
           분석 시작
         </button>
       </div>
-
       {/* 결과 */}
-      {submitted && (
-        <div className="mt-6 bg-white border border-white/[0.07] rounded-2xl p-6">
-          <div className="text-[11px] font-mono text-slate-600 tracking-widest uppercase mb-4">
-            Results
-          </div>
-          <div className="text-sm text-slate-400">
-            API 연동 후 결과가 여기에 표시됩니다.
-          </div>
+      {submitted && results.length > 0 && (
+        <div className="mt-6 px-10">
+          <SectionTitle>결과</SectionTitle>
+          <ResultTable
+            results={results}
+            fileName={`result_${form.file?.name ?? "result.xlsx"}`}
+          />
         </div>
       )}
     </div>

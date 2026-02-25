@@ -1,5 +1,8 @@
 export interface PodcastResult {
-  channel: string;
+  rowIndex: number;
+  channelName: string;
   appleId: string;
-  rss: string;
+  rssUrl: string;
+  status: "SUCCESS" | "FAILED";
+  reason?: string;
 }

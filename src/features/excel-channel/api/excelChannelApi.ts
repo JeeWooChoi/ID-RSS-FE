@@ -11,8 +11,6 @@ interface ExcelChannelParams {
   appleIdColumn: string;
   rssColumn: string;
   country: string;
-  overwrite: boolean;
-  returnFile: boolean;
 }
 
 export const excelChannelApi = async (
@@ -28,15 +26,11 @@ export const excelChannelApi = async (
   formData.append("appleIdColumn", params.appleIdColumn);
   formData.append("rssColumn", params.rssColumn);
   formData.append("country", params.country);
-  formData.append("overwrite", String(params.overwrite));
-  formData.append("returnFile", String(params.returnFile));
 
   const response = await axiosInstance.post(
     "/bulk-import/excel-file-channel",
     formData,
-    {
-      responseType: params.returnFile ? "blob" : "json", // returnFile이면 blob으로 받기
-    },
   );
+  console.log(response);
   return response.data;
 };
