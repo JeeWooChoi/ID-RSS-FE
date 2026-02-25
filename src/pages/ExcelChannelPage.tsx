@@ -1,7 +1,7 @@
 import type { PodcastResult } from "@/entities/podcast/types";
-import { excelChannelApi } from "@/features/excel-channel/api/excelChannelApi";
-import { Input } from "@/shared/ui/Input";
-import { Label } from "@/shared/ui/Label";
+import { excelChannelApi } from "@/features/excel-upload/api/excelChannelApi";
+import { ExcelFormFields } from "@/features/excel-upload/ui/ExcelFormFields";
+import { FileUploadZone } from "@/features/excel-upload/ui/FileUploadZone";
 import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { handleApiError } from "@/shared/utils/handleApiError";
@@ -50,7 +50,6 @@ const getInitialForm = (): FormState => {
 
 export const ExcelChannelPage = () => {
   const [form, setForm] = useState<FormState>(getInitialForm);
-  const [dragging, setDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<PodcastResult[]>([]);
 
@@ -63,13 +62,6 @@ export const ExcelChannelPage = () => {
 
   const set = (key: keyof FormState, value: string | File | null) =>
     setForm((prev) => ({ ...prev, [key]: value }));
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragging(false);
-    const f = e.dataTransfer.files[0];
-    if (f) set("file", f);
-  };
 
   const handleSubmitJson = async () => {
     if (!form.file) return alert("파일을 업로드해주세요.");
@@ -106,148 +98,22 @@ export const ExcelChannelPage = () => {
       <div className="px-10">
         {/* 파일 업로드 */}
         <SectionTitle>파일</SectionTitle>
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={handleDrop}
-          onClick={() => document.getElementById("fileInput")?.click()}
-          className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all mb-6 ${
-            dragging
-              ? "border-indigo-500 bg-indigo-500/5"
-              : form.file
-                ? "border-secondary-color"
-                : "border-white/30 hover:border-gray-500"
-          }`}
-        >
-          <input
-            id="fileInput"
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) set("file", f);
-            }}
-          />
-
-          {form.file && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                set("file", null);
-              }}
-              className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/30 text-gray-200 hover:text-red-500 transition-all text-xs flex items-center justify-center"
-            >
-              ✕
-            </button>
-          )}
-
-          <div className="text-2xl mb-2">{form.file ? "✅" : "📂"}</div>
-          <div
-            className={`text-sm font-medium ${
-              form.file ? "text-secondary-color" : "text-gray-400"
-            }`}
-          >
-            {form.file
-              ? form.file.name
-              : "엑셀 파일을 드래그하거나 클릭해서 업로드"}
-          </div>
-          <div className="text-m text-gray-400 mt-1">.xlsx, .xls, .csv</div>
-        </div>
-
+        <FileUploadZone
+          file={form.file ?? null} // undefined면 null로 변환
+          onFile={(f) => set("file", f)}
+          onClear={() => set("file", null)}
+        />
         {/* 시트 설정 */}
-        <SectionTitle>시트 설정</SectionTitle>
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div>
-            <Label required>시트명</Label>
-            <Input
-              placeholder="ex) US_미국"
-              value={form.sheetName}
-              onChange={(e) => set("sheetName", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label required>헤더 행</Label>
-            <Input
-              type="number"
-              min="1"
-              placeholder="ex) 1"
-              value={form.headerRow}
-              onChange={(e) => set("headerRow", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label required>시작 행</Label>
-            <Input
-              type="number"
-              min="1"
-              placeholder="ex) 3"
-              value={form.startRow}
-              onChange={(e) => set("startRow", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label required>종료 행</Label>
-            <Input
-              type="number"
-              min="1"
-              placeholder="ex) 100"
-              value={form.endRow}
-              onChange={(e) => set("endRow", e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* 컬럼 설정 */}
-        <SectionTitle>컬럼 설정</SectionTitle>
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <div>
-            <Label required>채널명 컬럼</Label>
-            <Input
-              placeholder="채널명"
-              value={form.channelNameColumn}
-              onChange={(e) => set("channelNameColumn", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label required>Apple ID 컬럼</Label>
-            <Input
-              placeholder="애플 ID"
-              value={form.appleIdColumn}
-              onChange={(e) => set("appleIdColumn", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label required>RSS 컬럼</Label>
-            <Input
-              placeholder="RSS"
-              value={form.rssColumn}
-              onChange={(e) => set("rssColumn", e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* 기타 설정 */}
-        <SectionTitle>기타 설정</SectionTitle>
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div>
-            <Label>국가 코드</Label>
-            <Input
-              placeholder="ex) US, KR, JP"
-              value={form.country}
-              onChange={(e) => set("country", e.target.value)}
-            />
-          </div>
-        </div>
+        <ExcelFormFields
+          form={form}
+          set={(key, value) => set(key as keyof FormState, value)}
+        />
 
         {/* 버튼 영역 */}
         <div className="flex gap-3">
           <button
             onClick={handleSubmitJson}
-            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold py-4 rounded-xl transition-all text-sm cursor-pointer"
+            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold px-5 py-4 rounded-xl transition-all text-sm cursor-pointer"
           >
             분석 시작
           </button>
