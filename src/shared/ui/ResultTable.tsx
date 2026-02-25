@@ -2,20 +2,13 @@ import type { PodcastResult } from "@/entities/podcast/types";
 import { CopyButton } from "@/shared/ui/CopyButton";
 import { downloadExcel } from "@/shared/utils/downloadExcel";
 import { CopyCell } from "./CopyCell";
+import { getColumnsByType } from "@/entities/podcast/config/columns";
 
 interface ResultTableProps {
   results: PodcastResult[];
   fileName?: string;
+  type?: "manualAppleId" | "manualChannel" | "excel" | "topPodcast";
 }
-
-const COLUMNS: { key: keyof PodcastResult; label: string }[] = [
-  { key: "rowIndex", label: "행" },
-  { key: "channelName", label: "채널명" },
-  { key: "appleId", label: "Apple ID" },
-  { key: "rssUrl", label: "RSS URL" },
-  { key: "status", label: "상태" },
-  { key: "reason", label: "기타" },
-];
 
 const COPYABLE_KEYS: (keyof PodcastResult)[] = [
   "channelName",
@@ -26,10 +19,13 @@ const COPYABLE_KEYS: (keyof PodcastResult)[] = [
 export const ResultTable = ({
   results,
   fileName = "result.xlsx",
+  type = "excel",
 }: ResultTableProps) => {
   const handleDownloadExcel = () => {
-    downloadExcel(results, fileName);
+    downloadExcel(results, fileName, type);
   };
+
+  const columns = getColumnsByType(type);
 
   return (
     <div className="border border-gray-500 rounded-xl overflow-hidden">
@@ -49,7 +45,7 @@ export const ResultTable = ({
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="border-b border-white/10">
-              {COLUMNS.map(({ key, label }) => (
+              {columns.map(({ key, label }) => (
                 <th
                   key={key}
                   className="text-left px-4 py-3 text-sm text-slate-500 tracking-wider uppercase"
@@ -66,26 +62,36 @@ export const ResultTable = ({
               ))}
             </tr>
           </thead>
+
           <tbody>
             {results.map((r, i) => (
               <tr
                 key={i}
                 className="border-b border-white/5 hover:bg-white/[0.03] transition-colors"
               >
-                <td className="px-4 py-3 text-gray-400 text-sm font-mono">
-                  {r.rowIndex}
-                </td>
-                <CopyCell value={r.channelName} />
-                <CopyCell value={r.appleId} mono />
-                <CopyCell value={r.rssUrl} mono />
-                <td
-                  className={`px-4 py-3 text-sm font-mono ${r.status === "SUCCESS" ? "text-secondary-color" : r.status === "FAILED" ? "text-red-500" : "text-gray-400"}`}
-                >
-                  {r.status}
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400 font-mono">
-                  {r.reason}
-                </td>
+                {columns.map(({ key }) => (
+                  <td
+                    key={String(key)}
+                    className={`px-4 py-3 text-sm font-mono ${
+                      key === "status"
+                        ? r.status === "SUCCESS"
+                          ? "text-secondary-color"
+                          : r.status === "FAILED"
+                            ? "text-red-500"
+                            : "text-gray-400"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {COPYABLE_KEYS.includes(key) ? (
+                      <CopyCell
+                        value={String(r[key] ?? "")}
+                        mono={key !== "channelName"}
+                      />
+                    ) : (
+                      String(r[key] ?? "")
+                    )}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>

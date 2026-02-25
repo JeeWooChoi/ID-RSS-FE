@@ -124,6 +124,7 @@ export const ManualChannelPage = () => {
           <ResultTable
             results={results}
             fileName={`result_${form.channelName ?? "result"}.xlsx`}
+            type="manualChannel"
           />
         </div>
       )}

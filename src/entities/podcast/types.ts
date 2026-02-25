@@ -1,4 +1,5 @@
 export interface PodcastResult {
+  rank?: number; // top podcast인 경우에만 존재
   rowIndex: number;
   channelName: string;
   appleId: string;

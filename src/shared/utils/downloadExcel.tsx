@@ -1,20 +1,31 @@
 import * as XLSX from "xlsx";
 import type { PodcastResult } from "@/entities/podcast/types";
+import {
+  getColumnsByType,
+  type ResultType,
+} from "@/entities/podcast/config/columns";
 
 export const downloadExcel = (
   results: PodcastResult[],
   fileName = "result.xlsx",
+  type: ResultType = "excel",
 ) => {
-  const data = results.map((r) => ({
-    행: r.rowIndex,
-    채널명: r.channelName,
-    "Apple ID": r.appleId,
-    RSS: r.rssUrl,
-    상태: r.status,
-    기타: r.reason || "",
-  }));
+  const columns = getColumnsByType(type);
 
-  const worksheet = XLSX.utils.json_to_sheet(data);
+  const data = results.map((r) => {
+    const row: Record<string, string | number> = {};
+
+    columns.forEach(({ key, label }) => {
+      row[label] = (r[key] as string | number) ?? "";
+    });
+
+    return row;
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(data, {
+    header: columns.map((c) => c.label),
+  });
+
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
   XLSX.writeFile(workbook, fileName);

@@ -1,36 +1,22 @@
 import type { PodcastResult } from "@/entities/podcast/types";
-import { excelAppleIdApi } from "@/features/excel-upload/api/excelAppleIdApi";
-import { ExcelFormFields } from "@/features/excel-upload/ui/ExcelFormFields";
-import { FileUploadZone } from "@/features/excel-upload/ui/FileUploadZone";
+import { manualTopPodcastApi } from "@/features/manual-lookup/api/manualTopPodcastApi";
+import { Input } from "@/shared/ui/Input";
+import { Label } from "@/shared/ui/Label";
 import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { handleApiError } from "@/shared/utils/handleApiError";
 import { useEffect, useState } from "react";
 
 interface FormState {
-  sheetName: string;
-  startRow: string;
-  endRow: string;
-  headerRow: string;
-  channelNameColumn: string;
-  appleIdColumn: string;
-  rssColumn: string;
+  limit?: number;
   country: string;
-  file?: File | null;
 }
 
-const STORAGE_KEY = "excelAppleIdForm";
+const STORAGE_KEY = "topPodcastForm";
 
 const INITIAL_FORM: FormState = {
-  sheetName: "",
-  startRow: "",
-  endRow: "",
-  headerRow: "",
-  channelNameColumn: "채널명",
-  appleIdColumn: "애플 ID",
-  rssColumn: "RSS",
+  limit: 100,
   country: "",
-  file: null,
 };
 
 const getInitialForm = (): FormState => {
@@ -41,33 +27,31 @@ const getInitialForm = (): FormState => {
     return {
       ...INITIAL_FORM,
       ...JSON.parse(saved),
-      file: null,
     };
   } catch {
     return INITIAL_FORM;
   }
 };
 
-export const ExcelAppleIdPage = () => {
+export const TopPodcastPage = () => {
   const [form, setForm] = useState<FormState>(getInitialForm);
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<PodcastResult[]>([]);
 
-  // form 변경될 때 자동 저장 (file 제외)
+  // form 변경될 때 자동 저장
   useEffect(() => {
     const formToSave = { ...form };
-    delete formToSave.file;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formToSave));
   }, [form]);
 
-  const set = (key: keyof FormState, value: string | File | null) =>
+  const set = (key: keyof FormState, value: string | number) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmitJson = async () => {
-    if (!form.file) return alert("파일을 업로드해주세요.");
+    if (!form.country) return alert("국가 코드를 입력해주세요.");
 
     try {
-      const data = await excelAppleIdApi({ ...form, file: form.file });
+      const data = await manualTopPodcastApi({ ...form });
       setResults(data);
       setSubmitted(true);
     } catch (error) {
@@ -79,7 +63,6 @@ export const ExcelAppleIdPage = () => {
     localStorage.removeItem(STORAGE_KEY);
     setForm({
       ...INITIAL_FORM,
-      file: null,
     });
   };
 
@@ -88,32 +71,42 @@ export const ExcelAppleIdPage = () => {
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-xl font-bold text-slate-100 mb-1">
-          엑셀 → Apple ID로 검색
+          Top Podcast 검색
         </h2>
         <p className="text-m text-gray-400">
-          엑셀 파일의 Apple ID 컬럼을 읽어 채널명과 RSS URL을 반환합니다.
+          수동으로 입력한 국가 코드와 조회 개수를 기준으로 Top Podcast 정보를
+          반환합니다.
         </p>
       </div>
 
       <div className="px-10">
-        {/* 파일 업로드 */}
-        <SectionTitle>파일</SectionTitle>
-        <FileUploadZone
-          file={form.file ?? null} // undefined면 null로 변환
-          onFile={(f) => set("file", f)}
-          onClear={() => set("file", null)}
-        />
-        {/* 시트 설정 */}
-        <ExcelFormFields
-          form={form}
-          set={(key, value) => set(key as keyof FormState, value)}
-        />
+        {/* 컬럼 설정 */}
 
+        <SectionTitle>조회 조건</SectionTitle>
+        <div className="grid grid-cols-2 gap-3 mb-16">
+          <div>
+            <Label required>국가 코드</Label>
+            <Input
+              placeholder="ex) US, KR, JP"
+              value={form.country}
+              onChange={(e) => set("country", e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>조회 개수</Label>
+            <Input
+              type="number"
+              placeholder="ex) 100 (1~100)"
+              value={form.limit}
+              onChange={(e) => set("limit", parseInt(e.target.value) || 100)}
+            />
+          </div>
+        </div>
         {/* 버튼 영역 */}
         <div className="flex gap-3">
           <button
             onClick={handleSubmitJson}
-            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold py-4 px-5 rounded-xl transition-all text-sm cursor-pointer"
+            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold px-5 py-4 rounded-xl transition-all text-sm cursor-pointer"
           >
             분석 시작
           </button>
@@ -128,13 +121,13 @@ export const ExcelAppleIdPage = () => {
       </div>
 
       {/* 결과 */}
-      {submitted && results.length > 0 && (
+      {submitted && results && (
         <div className="mt-6 px-10">
           <SectionTitle>결과</SectionTitle>
           <ResultTable
             results={results}
-            fileName={`result_${form.file?.name ?? "result.xlsx"}`}
-            type="excel"
+            fileName={`result_${form.country ?? "result"}.xlsx`}
+            type="topPodcast"
           />
         </div>
       )}

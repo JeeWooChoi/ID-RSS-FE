@@ -124,6 +124,7 @@ export const ManualAppleIdPage = () => {
           <ResultTable
             results={results}
             fileName={`result_${form.appleId ?? "result"}.xlsx`}
+            type="manualAppleId"
           />
         </div>
       )}

@@ -38,11 +38,11 @@ const NAV_ITEMS: NavItem[] = [
     path: "/manual-apple-id",
   },
   {
-    id: "popular",
+    id: "top-podcast",
     icon: "🔥",
     label: "국가별 TOP 팟캐스트",
     sub: "Apple ID + RSS 반환",
-    path: "/popular",
+    path: "/top-podcast",
   },
 ];
 
@@ -82,13 +82,6 @@ export const Sidebar = () => {
           </NavLink>
         ))}
       </nav>
-
-      {/* Footer */}
-      <div className="px-5 py-3.5 border-t border-[#ffffff06]">
-        <div className="text-[10px] text-[#1e293b] font-mono">
-          v1.0.0 · Apple Podcasts API
-        </div>
-      </div>
     </aside>
   );
 };
