@@ -7,7 +7,7 @@ export const RootLayout = () => (
     <Header />
     <div className="flex flex-1 overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-auto m-10 ">
+      <main className="flex-1 overflow-auto p-10 scrollbar scrollbar-thumb-gray-600 scrollbar-track-gray-900">
         <Outlet />
       </main>
     </div>

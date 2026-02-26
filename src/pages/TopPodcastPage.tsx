@@ -15,7 +15,7 @@ interface FormState {
 const STORAGE_KEY = "topPodcastForm";
 
 const INITIAL_FORM: FormState = {
-  limit: 100,
+  limit: undefined,
   country: "",
 };
 
@@ -98,7 +98,7 @@ export const TopPodcastPage = () => {
               type="number"
               placeholder="ex) 100 (1~100)"
               value={form.limit}
-              onChange={(e) => set("limit", parseInt(e.target.value) || 100)}
+              onChange={(e) => set("limit", parseInt(e.target.value))}
             />
           </div>
         </div>

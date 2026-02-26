@@ -35,16 +35,16 @@ export const ResultTable = ({
         </span>
         <button
           onClick={handleDownloadExcel}
-          className="text-xs bg-secondary-color hover:bg-light-secondary-color text-black px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+          className="text-xs bg-secondary-color hover:bg-light-secondary-color text-black px-3 py-2 rounded-lg transition-all cursor-pointer"
         >
           ⬇️ 엑셀 다운로드
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-auto max-h-100 scrollbar scrollbar-thumb-gray-600 scrollbar-track-gray-900 scrollbar-thumb">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="border-b border-white/10">
+            <tr className="border-b border-gray-600">
               {columns.map(({ key, label }) => (
                 <th
                   key={key}
@@ -65,10 +65,7 @@ export const ResultTable = ({
 
           <tbody>
             {results.map((r, i) => (
-              <tr
-                key={i}
-                className="border-b border-white/5 hover:bg-white/[0.03] transition-colors"
-              >
+              <tr key={i} className="border-b border-gray-700">
                 {columns.map(({ key }) => (
                   <td
                     key={String(key)}
