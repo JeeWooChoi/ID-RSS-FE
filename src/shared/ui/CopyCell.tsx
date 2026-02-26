@@ -16,7 +16,7 @@ export const CopyCell = ({ value, mono }: CopyCellProps) => {
 
   return (
     <td className="px-4 py-3 group">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2 ">
         <span
           className={`${mono ? "text-gray-300" : "text-gray-200 font-medium"} truncate max-w-[240px]`}
         >

@@ -2,10 +2,13 @@ import type { PodcastResult } from "@/entities/podcast/types";
 import { excelChannelApi } from "@/features/excel-upload/api/excelChannelApi";
 import { ExcelFormFields } from "@/features/excel-upload/ui/ExcelFormFields";
 import { FileUploadZone } from "@/features/excel-upload/ui/FileUploadZone";
+import { TOAST_IDS } from "@/shared/constants/toastIds";
 import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { handleApiError } from "@/shared/utils/handleApiError";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 interface FormState {
   sheetName: string;
@@ -63,15 +66,27 @@ export const ExcelChannelPage = () => {
   const set = (key: keyof FormState, value: string | File | null) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSubmitJson = async () => {
-    if (!form.file) return alert("파일을 업로드해주세요.");
+  const [isLoading, setIsLoading] = useState(false);
 
+  const handleSubmitJson = async () => {
+    if (!form.file) {
+      toast.error("파일을 업로드해주세요.", {
+        id: TOAST_IDS.excelChannel.warning,
+      });
+      return;
+    }
+    setIsLoading(true);
     try {
       const data = await excelChannelApi({ ...form, file: form.file });
       setResults(data);
       setSubmitted(true);
+      toast.success("분석이 완료되었습니다.", {
+        id: TOAST_IDS.excelChannel.success,
+      });
     } catch (error) {
-      alert(handleApiError(error));
+      toast.error(handleApiError(error), { id: TOAST_IDS.excelChannel.error });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,9 +128,17 @@ export const ExcelChannelPage = () => {
         <div className="flex gap-3">
           <button
             onClick={handleSubmitJson}
-            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold px-5 py-4 rounded-xl transition-all text-sm cursor-pointer"
+            disabled={isLoading}
+            className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold px-5 py-4 rounded-xl transition-all text-sm cursor-pointer disabled:opacity-50"
           >
-            분석 시작
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin w-4 h-4" />
+                분석 중...
+              </span>
+            ) : (
+              "분석 시작"
+            )}
           </button>
 
           <button

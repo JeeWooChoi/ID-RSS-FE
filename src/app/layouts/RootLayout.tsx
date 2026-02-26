@@ -1,9 +1,11 @@
 import { Header } from "@/widgets/Header";
 import { Sidebar } from "@/widgets/Sidebar";
+import { Toaster } from "react-hot-toast";
 import { Outlet } from "react-router-dom";
 
 export const RootLayout = () => (
   <div className="flex flex-col h-screen ">
+    <Toaster position="top-right" />
     <Header />
     <div className="flex flex-1 overflow-hidden">
       <Sidebar />

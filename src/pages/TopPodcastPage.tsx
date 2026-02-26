@@ -1,11 +1,14 @@
 import type { PodcastResult } from "@/entities/podcast/types";
 import { manualTopPodcastApi } from "@/features/manual-lookup/api/manualTopPodcastApi";
+import { TOAST_IDS } from "@/shared/constants/toastIds";
 import { Input } from "@/shared/ui/Input";
 import { Label } from "@/shared/ui/Label";
 import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { handleApiError } from "@/shared/utils/handleApiError";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface FormState {
   limit?: number;
@@ -47,15 +50,25 @@ export const TopPodcastPage = () => {
   const set = (key: keyof FormState, value: string | number) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmitJson = async () => {
-    if (!form.country) return alert("국가 코드를 입력해주세요.");
+    if (!form.country)
+      return toast.error("국가 코드를 입력해주세요.", {
+        id: TOAST_IDS.topPodcast.warning,
+      });
 
     try {
+      setIsLoading(true);
       const data = await manualTopPodcastApi({ ...form });
       setResults(data);
       setSubmitted(true);
+      toast.success("분석이 완료되었습니다.", {
+        id: TOAST_IDS.topPodcast.success,
+      });
     } catch (error) {
-      alert(handleApiError(error));
+      toast.error(handleApiError(error), { id: TOAST_IDS.topPodcast.error });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,9 +119,17 @@ export const TopPodcastPage = () => {
         <div className="flex gap-3">
           <button
             onClick={handleSubmitJson}
+            disabled={isLoading}
             className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold px-5 py-4 rounded-xl transition-all text-sm cursor-pointer"
           >
-            분석 시작
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin w-4 h-4" />
+                분석 중...
+              </span>
+            ) : (
+              "분석 시작"
+            )}
           </button>
 
           <button

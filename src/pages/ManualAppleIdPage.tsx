@@ -1,11 +1,14 @@
 import type { PodcastResult } from "@/entities/podcast/types";
 import { manualAppleIdApi } from "@/features/manual-lookup/api/manualAppleIdApi";
+import { TOAST_IDS } from "@/shared/constants/toastIds";
 import { Input } from "@/shared/ui/Input";
 import { Label } from "@/shared/ui/Label";
 import { ResultTable } from "@/shared/ui/ResultTable";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { handleApiError } from "@/shared/utils/handleApiError";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface FormState {
   appleId: string;
@@ -47,15 +50,25 @@ export const ManualAppleIdPage = () => {
   const set = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmitJson = async () => {
-    if (!form.appleId) return alert("Apple ID를 입력해주세요.");
+    if (!form.appleId)
+      return toast.error("Apple ID를 입력해주세요.", {
+        id: TOAST_IDS.manualAppleId.warning,
+      });
 
     try {
+      setIsLoading(true);
       const data = await manualAppleIdApi({ ...form });
       setResults(data);
       setSubmitted(true);
+      toast.success("분석이 완료되었습니다.", {
+        id: TOAST_IDS.manualAppleId.success,
+      });
     } catch (error) {
-      alert(handleApiError(error));
+      toast.error(handleApiError(error), { id: TOAST_IDS.manualAppleId.error });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,10 +115,18 @@ export const ManualAppleIdPage = () => {
         {/* 버튼 영역 */}
         <div className="flex gap-3">
           <button
+            disabled={isLoading}
             onClick={handleSubmitJson}
             className="flex-1 bg-key-color hover:bg-light-key-color text-white font-semibold px-5 py-4 rounded-xl transition-all text-sm cursor-pointer"
           >
-            분석 시작
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin w-4 h-4" />
+                분석 중...
+              </span>
+            ) : (
+              "분석 시작"
+            )}
           </button>
 
           <button

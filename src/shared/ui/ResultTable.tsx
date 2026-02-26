@@ -3,6 +3,7 @@ import { CopyButton } from "@/shared/ui/CopyButton";
 import { downloadExcel } from "@/shared/utils/downloadExcel";
 import { CopyCell } from "./CopyCell";
 import { getColumnsByType } from "@/entities/podcast/config/columns";
+import { Download } from "lucide-react";
 
 interface ResultTableProps {
   results: PodcastResult[];
@@ -35,9 +36,10 @@ export const ResultTable = ({
         </span>
         <button
           onClick={handleDownloadExcel}
-          className="text-xs bg-secondary-color hover:bg-light-secondary-color text-black px-3 py-2 rounded-lg transition-all cursor-pointer"
+          className="text-xs bg-secondary-color hover:bg-light-secondary-color text-white font-semibold px-3 py-2 rounded-lg transition-all cursor-pointer"
         >
-          ⬇️ 엑셀 다운로드
+          <Download className="inline mr-1 h-5" />
+          엑셀 다운로드
         </button>
       </div>
 
@@ -48,9 +50,9 @@ export const ResultTable = ({
               {columns.map(({ key, label }) => (
                 <th
                   key={key}
-                  className="text-left px-4 py-3 text-sm text-slate-500 tracking-wider uppercase"
+                  className="px-4 py-3 text-sm text-slate-500 tracking-wider uppercase"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center gap-2">
                     {label}
                     {COPYABLE_KEYS.includes(key) && (
                       <CopyButton
@@ -69,7 +71,7 @@ export const ResultTable = ({
                 {columns.map(({ key }) => (
                   <td
                     key={String(key)}
-                    className={`px-4 py-3 text-sm font-mono ${
+                    className={`px-4 py-3 text-sm font-mono text-center ${
                       key === "status"
                         ? r.status === "SUCCESS"
                           ? "text-secondary-color"

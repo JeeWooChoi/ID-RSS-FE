@@ -31,7 +31,7 @@ export const FileUploadZone = ({
       onClick={() => document.getElementById("fileInput")?.click()}
       className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all mb-6 ${
         dragging
-          ? "border-indigo-500 bg-indigo-500/5"
+          ? "border-key-color"
           : file
             ? "border-secondary-color"
             : "border-white/30 hover:border-gray-500"
