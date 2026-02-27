@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# ID-RSS-FE
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+팟캐스트 채널 정보를 조회/변환하기 위한 프론트엔드 프로젝트입니다.  
+엑셀 업로드 기반 조회와 수동 입력 기반 조회를 모두 지원하며, 결과를 테이블로 확인하고 엑셀 파일로 다운로드할 수 있습니다.
 
-Currently, two official plugins are available:
+## 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 엑셀 업로드 기반 채널 조회
+  - 채널명으로 Apple ID + RSS 조회
+  - Apple ID로 RSS 조회
+- 수동 입력 기반 조회
+  - 채널명으로 RSS 조회
+  - Apple ID로 채널명 조회
+  - 국가 코드 기준 Top Podcast 조회
+- 결과 기능
+  - 결과 테이블 렌더링
+  - 셀 단위 복사
+  - 엑셀 다운로드
 
-## React Compiler
+## 기술 스택
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- React 19
+- TypeScript
+- Vite
+- React Router
+- Axios
+- Tailwind CSS
+- react-hot-toast
+- xlsx
 
-## Expanding the ESLint configuration
+## 시작하기
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1) 요구 사항
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18 이상 권장
+- npm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 2) 환경변수 설정 (서버 주소)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+API 서버 주소를 .env 파일에서 설정합니다.
+
+```
+VITE_API_BASE_URL={백엔드 주소}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3) 설치
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+### 4) 개발 서버 실행
+
+```bash
+npm run dev
+```
+
+기본 실행 주소: `http://localhost:5173`
+
+## 스크립트
+
+- `npm run dev` : 개발 서버 실행
+- `npm run build` : 타입 체크 + 프로덕션 빌드
+- `npm run preview` : 빌드 결과 미리보기
+- `npm run lint` : ESLint 실행
+
+## 라우트
+
+- `/excel-channel` : 엑셀 업로드로 Apple ID + RSS 조회
+- `/excel-apple-id` : 엑셀 업로드로 RSS 조회
+- `/manual-channel` : 수동 입력 채널명 조회
+- `/manual-apple-id` : 수동 입력 Apple ID 조회
+- `/top-podcast` : 국가 코드 기반 Top Podcast 조회
+
+## 프로젝트 구조 (요약)
+
+```text
+src/
+  app/            # 라우터, 레이아웃
+  entities/       # 도메인 타입/설정
+  features/       # 기능 단위 API, UI
+  pages/          # 화면 컴포넌트
+  shared/         # 공용 UI, 유틸, API 인스턴스
+  widgets/        # Header, Sidebar 등 페이지 구성 요소
+```
+
+## 참고
+
+- 일부 입력 폼은 마지막 입력값을 `localStorage`에 저장합니다.
+- 조회 결과는 화면에서 확인 후 엑셀로 내보낼 수 있습니다.
