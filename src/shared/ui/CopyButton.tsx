@@ -23,7 +23,7 @@ export const CopyButton = ({ text }: CopyButtonProps) => {
           : "bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200"
       }`}
     >
-      {copied ? <Check size={12} /> : <Copy size={12} />}
+      {copied ? <Check size={14} /> : <Copy size={14} />}
     </button>
   );
 };

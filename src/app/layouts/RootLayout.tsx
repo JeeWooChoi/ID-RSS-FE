@@ -5,7 +5,14 @@ import { Outlet } from "react-router-dom";
 
 export const RootLayout = () => (
   <div className="flex flex-col h-screen ">
-    <Toaster position="top-right" />
+    <Toaster
+      position="top-right"
+      toastOptions={{
+        style: {
+          fontSize: "14px",
+        },
+      }}
+    />
     <Header />
     <div className="flex flex-1 overflow-hidden">
       <Sidebar />

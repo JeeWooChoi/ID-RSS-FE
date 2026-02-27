@@ -71,7 +71,7 @@ export const ResultTable = ({
                 {columns.map(({ key }) => (
                   <td
                     key={String(key)}
-                    className={`px-4 py-3 text-sm font-mono text-center ${
+                    className={`px-4 py-3 text-sm text-center ${
                       key === "status"
                         ? r.status === "SUCCESS"
                           ? "text-secondary-color"
@@ -82,10 +82,7 @@ export const ResultTable = ({
                     }`}
                   >
                     {COPYABLE_KEYS.includes(key) ? (
-                      <CopyCell
-                        value={String(r[key] ?? "")}
-                        mono={key !== "channelName"}
-                      />
+                      <CopyCell value={String(r[key] ?? "")} />
                     ) : (
                       String(r[key] ?? "")
                     )}

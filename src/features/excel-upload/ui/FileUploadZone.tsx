@@ -1,3 +1,4 @@
+import { FolderCheck, FolderUp, X } from "lucide-react";
 import { useState } from "react";
 
 interface FileUploadZoneProps {
@@ -53,12 +54,18 @@ export const FileUploadZone = ({
             e.stopPropagation();
             onClear();
           }}
-          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/30 text-gray-200 hover:text-red-500 transition-all text-xs flex items-center justify-center"
+          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/30 text-gray-200 hover:text-red-500 transition-all text-xs flex items-center justify-center cursor-pointer"
         >
-          ✕
+          <X className="w-4 h-4" />
         </button>
       )}
-      <div className="text-2xl mb-2">{file ? "✅" : "📂"}</div>
+      <div className="text-2xl mb-2 flex justify-center">
+        {file ? (
+          <FolderCheck className="w-6 h-6 text-green-500" />
+        ) : (
+          <FolderUp className="w-6 h-6 text-gray-400" />
+        )}
+      </div>
       <div
         className={`text-sm font-medium ${file ? "text-secondary-color" : "text-gray-400"}`}
       >

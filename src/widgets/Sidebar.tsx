@@ -60,7 +60,7 @@ export const Sidebar = () => {
               `w-full flex items-center gap-2.5 rounded-lg border-l-2 transition-all duration-150 no-underline cursor-pointer ${
                 isActive
                   ? "bg-dark border-key-color"
-                  : "border-transparent hover:bg-[#ffffff05]"
+                  : "border-transparent hover:bg-gray-700"
               }`
             }
           >
@@ -73,9 +73,7 @@ export const Sidebar = () => {
                   >
                     {item.label}
                   </div>
-                  <div className="text-sm text-gray-200 font-mono mt-px">
-                    {item.sub}
-                  </div>
+                  <div className="text-sm text-gray-200 mt-px">{item.sub}</div>
                 </div>
               </>
             )}

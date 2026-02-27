@@ -33,7 +33,6 @@ export const ExcelFormFields = ({ form, set }: ExcelFormFieldsProps) => {
         <div>
           <Label required>헤더 행</Label>
           <Input
-            type="number"
             min="1"
             placeholder="ex) 1"
             value={form.headerRow}
@@ -43,7 +42,6 @@ export const ExcelFormFields = ({ form, set }: ExcelFormFieldsProps) => {
         <div>
           <Label required>시작 행</Label>
           <Input
-            type="number"
             min="1"
             placeholder="ex) 3"
             value={form.startRow}
@@ -53,7 +51,6 @@ export const ExcelFormFields = ({ form, set }: ExcelFormFieldsProps) => {
         <div>
           <Label required>종료 행</Label>
           <Input
-            type="number"
             min="1"
             placeholder="ex) 100"
             value={form.endRow}
@@ -68,7 +65,7 @@ export const ExcelFormFields = ({ form, set }: ExcelFormFieldsProps) => {
         <div>
           <Label required>채널명 컬럼</Label>
           <Input
-            placeholder="채널명"
+            placeholder="ex) 채널명"
             value={form.channelNameColumn}
             onChange={(e) => set("channelNameColumn", e.target.value)}
           />
@@ -76,7 +73,7 @@ export const ExcelFormFields = ({ form, set }: ExcelFormFieldsProps) => {
         <div>
           <Label required>Apple ID 컬럼</Label>
           <Input
-            placeholder="애플 ID"
+            placeholder="ex) 애플 ID"
             value={form.appleIdColumn}
             onChange={(e) => set("appleIdColumn", e.target.value)}
           />
@@ -84,7 +81,7 @@ export const ExcelFormFields = ({ form, set }: ExcelFormFieldsProps) => {
         <div>
           <Label required>RSS 컬럼</Label>
           <Input
-            placeholder="RSS"
+            placeholder="ex) RSS"
             value={form.rssColumn}
             onChange={(e) => set("rssColumn", e.target.value)}
           />

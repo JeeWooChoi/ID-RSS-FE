@@ -11,14 +11,14 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface FormState {
-  limit?: number;
+  limit?: string;
   country: string;
 }
 
 const STORAGE_KEY = "topPodcastForm";
 
 const INITIAL_FORM: FormState = {
-  limit: undefined,
+  limit: "",
   country: "",
 };
 
@@ -108,10 +108,9 @@ export const TopPodcastPage = () => {
           <div>
             <Label>조회 개수</Label>
             <Input
-              type="number"
               placeholder="ex) 100 (1~100)"
               value={form.limit}
-              onChange={(e) => set("limit", parseInt(e.target.value))}
+              onChange={(e) => set("limit", e.target.value)}
             />
           </div>
         </div>
